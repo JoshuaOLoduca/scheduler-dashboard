@@ -30,16 +30,29 @@ const data = [
 class Dashboard extends Component {
   state = {
     loading: false,
+    focused: null,
+  };
+
+  onClick = (id) => {
+    this.setState({
+      focused: this.state.focused ? null : id,
+    });
   };
 
   render() {
-    const dashboardClasses = classnames("dashboard");
+    const dashboardClasses = classnames("dashboard", {
+      "dashboard--focused": this.state.focused,
+    });
 
     if (this.state.loading) {
       return <Loading />;
     }
 
-    const panels = data.map((elm) => <Panel {...elm} key={elm.id} />);
+    const panels = data
+      .filter((elm) => !this.state.focused || this.state.focused === elm.id)
+      .map((elm) => (
+        <Panel {...elm} key={elm.id} onClick={() => this.onClick(elm.id)} />
+      ));
 
     return <main className={dashboardClasses}>{panels}</main>;
   }
